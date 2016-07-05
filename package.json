@@ -1,0 +1,24 @@
+{
+  "name": "gh",
+  "version": "0.0.1",
+  "description": "Ethereum helper script.",
+  "license": "BSD",
+  "dependencies": {
+    "bluebird": "^3.3.3",
+    "chalk": "^1.1.3",
+    "yargs": "4.8.0-candidate",
+    "lodash": "^4.6.1",
+    "web3": "^0.15.1",
+    "ethereumjs-wallet": "^0.6.0",
+    "ethereumjs-util": "^4.0.0",
+    "ethereumjs-tx": "^1.0.0",
+    "solc": "^0.2.2-2",
+    "read": "^1.0.7"
+  },
+  "yargs": {
+    "parse-numbers": false
+  },
+  "bin": {
+    "gh": "./bin/gh.js"
+  }
+}
