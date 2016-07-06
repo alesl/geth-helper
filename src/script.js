@@ -112,7 +112,7 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
       var res = _.extend({
         key: key,
         args: args
-      }, _.pick(step, ['type', 'contract', 'method', 'value']));
+      }, _.pick(step, ['type', 'contract', 'method', 'value', 'as']));
 
       if (step.address) {
         res['address'] = resolveVar(step.address);
@@ -199,8 +199,12 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
       cb: function(messages) {
         return function(info) {
           if (step.type=='deploy') {
-            CONTRACT_ADDRESS[contractName] = info.contractAddress;
-            messages.push('Contract '+chalk.blue(contractName)+' mined at '+chalk.blue(info.contractAddress));
+            CONTRACT_ADDRESS[step.as || contractName] = info.contractAddress;
+            var alias = '';
+            if (step.as) {
+              alias = ` (${step.as})`;
+            }
+            messages.push('Contract '+chalk.blue(contractName)+alias+' mined at '+chalk.blue(info.contractAddress));
           } else if (step.type=='call') {
             messages.push('Method '+contractName+'@'+methodName+' executed');
             var formater = contract.allEvents().formatter;

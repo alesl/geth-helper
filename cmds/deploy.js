@@ -28,7 +28,7 @@ exports.builder = {
 exports.handler = function (argv) {
   var contractFile = argv.file;
   var privateKey = argv.private;
-  var constructorArgs = argv._;
+  var constructorArgs = argv._.slice(1);
 
   util.step('Compiling contract', util.getContract(contractFile)).then(function(info) {
     var contractName = info.name;

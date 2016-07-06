@@ -9,7 +9,7 @@ exports.builder = {
 };
 
 exports.handler = function (argv) {
-  util.getContract(argv.file).then(function(info) {
+  util.getContract(argv.file, false).then(function(info) {
     console.log(JSON.stringify(info.abi));
   }).catch(util.printException);
 }

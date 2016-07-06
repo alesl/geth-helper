@@ -10,24 +10,31 @@ const Tx = require('ethereumjs-tx');
 const chalk = require('chalk');
 const read = require('read');
 const Web3 = require('web3');
-const web3 = makeWeb3();
 const util = require('util');
+var web3;
 
-function makeWeb3() {
-  var argv = require('yargs').argv;
-  if (argv.g) {
-    return new Web3(new Web3.providers.IpcProvider(argv.g, net));
-  } else if (argv.r) {
-    var ip, port = 8545;
-    var ipPort = argv.r.split(':');
-    ip = ipPort[0];
-    if (ipPort.length>1) {
-      port = parseInt(ipPort[1], 10);
-    }
-    return new Web3(new web3.providers.HttpProvider(`http://${ip}:${port}`));
+function getWeb3() {
+  if (web3) {
+    return web3;
   }
 
-  return new Web3();
+  var argv = require('yargs').argv;
+  if (argv.g) {
+    web3 = new Web3(new Web3.providers.IpcProvider(argv.g, net));
+  } else {
+    var ip = '127.0.0.1', port = 8545;
+    if (argv.r) {
+      var ipPort = argv.r.split(':');
+      ip = ipPort[0];
+      if (ipPort.length>1) {
+        port = parseInt(ipPort[1], 10);
+      }
+    }
+
+    web3 = new Web3(new Web3.providers.HttpProvider(`http://${ip}:${port}`));
+  }
+
+  return web3;
 }
 
 function privateToAddress(privateKey) {
@@ -43,7 +50,7 @@ function getNonce(address) {
   }
 
   return new Promise(function(resolve, reject) {
-    web3.eth.getTransactionCount(address, function(error, nonce) {
+    getWeb3().eth.getTransactionCount(address, function(error, nonce) {
       if (error) {
         reject(error);
       } else {
@@ -56,26 +63,26 @@ function getNonce(address) {
 function signWithNonce(privateKey, nonce, from, to, amount, data) {
   return new Promise(function(resolve, reject) {
     var rawTx = {
-      value: web3.fromDecimal(amount),
+      value: getWeb3().fromDecimal(amount),
       to: to,
       data: data,
       from: from,
     };
 
-    web3.eth.getGasPrice(function(error, price) {
-      web3.eth.estimateGas(rawTx, function(error, gasUsage) {
+    getWeb3().eth.getGasPrice(function(error, price) {
+      getWeb3().eth.estimateGas(rawTx, function(error, gasUsage) {
         var forceLimit = 4700000;
         if (gasUsage>forceLimit) {
           console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));
           process.exit();
         }
         var tx = new Tx({
-          nonce: (web3.toHex(nonce)),
+          nonce: (getWeb3().toHex(nonce)),
           to: rawTx.to,
           value: rawTx.value,
           from: from,
-          gasPrice: web3.toHex(price),
-          gasLimit: web3.toHex(/*gasUsage*/ forceLimit),
+          gasPrice: getWeb3().toHex(price),
+          gasLimit: getWeb3().toHex(/*gasUsage*/ forceLimit),
           data: data
         });
         var key = new Buffer(privateKey, 'hex')
@@ -95,7 +102,7 @@ function signTx(privateKey, from, to, amount, data) {
 
 function sendRaw(signed) {
   return new Promise(function(resolve, reject) {
-    web3.eth.sendRawTransaction(signed, function(error, res) {
+    getWeb3().eth.sendRawTransaction(signed, function(error, res) {
       if (error) {
         reject(error);
       } else {
@@ -115,12 +122,12 @@ function callMethod(privateKey, toAddress, value, contract, methodName, args) {
   return new Promise(function(resolve, reject) {
     var txId;
 
-    web3.eth.filter('latest').watch(function(error, block) {
+    getWeb3().eth.filter('latest').watch(function(error, block) {
       if (error || !txId) {
         return;
       }
 
-      web3.eth.getTransactionReceipt(txId, function(err, info) {
+      getWeb3().eth.getTransactionReceipt(txId, function(err, info) {
         if (!info) {
           return;
         }
@@ -268,7 +275,7 @@ function cache(key, val) {
   });
 };
 
-var getContract = function(fileName) {
+var getContract = function(fileName, incContract) {
   fileName = fs.realpathSync(fileName);
 
   var fileMaxTime = function(files) {
@@ -312,7 +319,7 @@ var getContract = function(fileName) {
     var decorate = function(res) {
       var props = ['name', 'byteCode', 'abi'];
       return _.extend(_.pick(res, props), {
-        contract: web3.eth.contract(res.abi)
+        contract: (incContract===undefined || incContract) ? getWeb3().eth.contract(res.abi) : null
       });
     };
 
@@ -402,14 +409,14 @@ var printException = function(err) {
 
 function watchTxs(txToWatch, afterMined) {
   return new Promise(function(resolve, reject) {
-    var blockFilter = web3.eth.filter('latest');
+    var blockFilter = getWeb3().eth.filter('latest');
     blockFilter.watch(function(error, block) {
       if (error) {
         return;
       }
 
       var checkTx = function(txId) {
-        web3.eth.getTransactionReceipt(txId, function(err, info) {
+        getWeb3().eth.getTransactionReceipt(txId, function(err, info) {
           if (!info) {
             return;
           }
@@ -457,18 +464,9 @@ var exports = module.exports = {
       })
     });
   },
-  setRpc: function(ipPort) {
-    var ip, port = 8545;
-    ipPort = ipPort.split(':');
-    ip = ipPort[0];
-    if (ipPort.length>1) {
-      port = parseInt(ipPort[1], 10);
-    }
-    web3.setProvider(new web3.providers.HttpProvider(`http://${ip}:${port}`));
-  },
   getBalance: function(addr) {
     return new Promise(function(resolve, reject) {
-      web3.eth.getBalance(addr, function(err, res) {
+      getWeb3().eth.getBalance(addr, function(err, res) {
         if (err) {
           reject(err);
         } else {
