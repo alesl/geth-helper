@@ -11,6 +11,7 @@ const chalk = require('chalk');
 const read = require('read');
 const Web3 = require('web3');
 const util = require('util');
+const ethUtil = require('ethereumjs-util');
 var web3;
 
 function getWeb3() {
