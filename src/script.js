@@ -7,6 +7,9 @@ const Web3 = new require('web3');
 const SolidityEvent = require('web3/lib/web3/event.js');
 const EthWallet = require('ethereumjs-wallet');
 const ethUtil = require('ethereumjs-util');
+Promise.config({
+  longStackTraces: false
+});
 
 module.exports = exports = function(file, extra, walletFile, showTransactions, showEvents) {
   var ALL_STEPS, VARS, CONTRACTS, STEP_INDEX, CONTRACT_ADDRESS, TX2CB, TEST_RESULTS = [];

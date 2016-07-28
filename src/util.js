@@ -13,6 +13,9 @@ const Web3 = require('web3');
 const util = require('util');
 const ethUtil = require('ethereumjs-util');
 var web3;
+Promise.config({
+  longStackTraces: false
+});
 
 function getWeb3() {
   if (web3) {
@@ -71,7 +74,15 @@ function signWithNonce(privateKey, nonce, from, to, amount, data) {
     };
 
     getWeb3().eth.getGasPrice(function(error, price) {
+      if (error) {
+        reject(error);
+        return;
+      }
       getWeb3().eth.estimateGas(rawTx, function(error, gasUsage) {
+        if (error) {
+          reject(error);
+          return;
+        }
         var forceLimit = 4700000;
         if (gasUsage>forceLimit) {
           console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));

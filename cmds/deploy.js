@@ -2,6 +2,10 @@ var _ = require('lodash');
 var Promise = require("bluebird");
 var chalk = require('chalk');
 var util = require('../src/util.js');
+Promise.config({
+  longStackTraces: false
+});
+
 
 exports.command = 'deploy [file]'
 exports.desc = 'Deploys contract'
