@@ -460,11 +460,15 @@ var exports = module.exports = {
   readFile: readFile,
   getNonce: getNonce,
   signWithNonce: signWithNonce,
+  signTx: signTx,
   privateToAddress: privateToAddress,
   sendRaw: sendRaw,
   watchTxs: watchTxs,
   writeLabel: writeLabel,
   writeDone: writeDone,
+  toWei : function(...args) {
+    return getWeb3().toWei(...args);
+  },
   read: function(options) {
     return new Promise(function(resolve, reject) {
       read(options, function(err, ret) {
