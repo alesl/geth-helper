@@ -24,6 +24,16 @@ To deploy single contract you can use command bellow.
 gh deploy Contract.sol -p '0x123...89'
 ```
 
+Deploy single contract and capture web3 line.
+
+```
+# To file
+gh deploy Contract.sol -p '0x123...89' 2> contract.js
+
+# To clipboard (osx)
+gh deploy Contract.sol -p '0x123...89' 3>&2 2>&1 1>&3 | pbcopy
+```
+
 Command takes parameters:
 - ``-p`` Private key used to deploy (required)
 - ``-g`` Path to geth.ipc (optional)

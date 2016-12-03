@@ -70,6 +70,9 @@ exports.handler = function (argv) {
       ).then(function(info) {
         console.log('Address:');
         console.log(chalk.green(info.contractAddress));
+
+        console.log('Web3:');
+        console.error(`${contractName.toLowerCase()} = eth.contract(${JSON.stringify(abi)}).at(${JSON.stringify(info.contractAddress)});`);
       });
     });
   }).catch(util.printException).finally(function() {
