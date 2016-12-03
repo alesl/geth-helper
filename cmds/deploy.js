@@ -26,6 +26,9 @@ exports.builder = {
     demand: false,
     describe: 'Geth IPC file',
     type: 'string'
+  },
+  _: {
+    type: 'string'
   }
 };
 
