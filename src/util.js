@@ -124,8 +124,42 @@ function sendRaw(signed) {
   });
 };
 
+function sendTx(from, to, amount, data) {
+  var rawTx = {
+    value: getWeb3().fromDecimal(amount),
+    to: to,
+    data: data,
+    from: from,
+  };
+
+  return new Promise(function(resolve, reject) {
+    getWeb3().eth.estimateGas(rawTx, function(error, gasUsage) {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      var forceLimit = 4700000;
+      if (gasUsage>forceLimit) {
+        console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));
+        process.exit();
+      }
+
+      rawTx.gas = forceLimit;
+
+      getWeb3().eth.sendTransaction(rawTx, function(error, res) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(res);
+        }
+      });
+    });
+  });
+}
+
 function callMethod(privateKey, toAddress, value, contract, methodName, args) {
-  var fromAddress = privateToAddress(privateKey);
+  var fromAddress = privateKey ? privateToAddress(privateKey) : getWeb3().eth.accounts[0];
   var method = contract[methodName];
   var data = method.getData.apply(method, args);
   if (methodName=='new') {
@@ -147,6 +181,20 @@ function callMethod(privateKey, toAddress, value, contract, methodName, args) {
         resolve(info);
       });
     });
+
+    if (!privateKey) {
+      return step('Broadcasting tx for '+methodName, sendTx(
+        fromAddress,
+        toAddress,
+        value,
+        data
+      )).then(function(id) {
+        txId = id;
+        console.log('Transaction:');
+        console.log(chalk.green(id));
+        writeLabel('Waiting to be mined');
+      });
+    }
 
     return step('Broadcasting tx for '+methodName, signTx(
       privateKey,

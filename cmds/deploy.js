@@ -12,7 +12,7 @@ exports.desc = 'Deploys contract'
 exports.builder = {
   p: {
     alias: 'private',
-    demand: true,
+    demand: false,
     describe: 'Private key to send tx from',
     type: 'string'
   },
