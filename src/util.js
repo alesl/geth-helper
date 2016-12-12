@@ -83,18 +83,21 @@ function signWithNonce(privateKey, nonce, from, to, amount, data) {
           reject(error);
           return;
         }
-        var forceLimit = 4700000;
-        if (gasUsage>forceLimit) {
-          console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));
-          process.exit();
-        }
+        // var forceLimit = 4700000;
+        // if (gasUsage>forceLimit) {
+        //   console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));
+        //   process.exit();
+        // }
+        //
+        gasUsage = Math.min(gasUsage * 2, 3000000);
+
         var tx = new Tx({
           nonce: (getWeb3().toHex(nonce)),
           to: rawTx.to,
           value: rawTx.value,
           from: from,
           gasPrice: getWeb3().toHex(price),
-          gasLimit: getWeb3().toHex(/*gasUsage*/ forceLimit),
+          gasLimit: getWeb3().toHex(gasUsage),
           data: data
         });
         var key = new Buffer(privateKey, 'hex')
@@ -139,13 +142,13 @@ function sendTx(from, to, amount, data) {
         return;
       }
 
-      var forceLimit = 4700000;
-      if (gasUsage>forceLimit) {
-        console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));
-        process.exit();
-      }
+      // var forceLimit = 4700000;
+      // if (gasUsage>forceLimit) {
+      //   console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));
+      //   process.exit();
+      // }
 
-      rawTx.gas = forceLimit;
+      rawTx.gas = Math.min(gasUsage * 2, 3000000);
 
       getWeb3().eth.sendTransaction(rawTx, function(error, res) {
         if (error) {
