@@ -7,6 +7,7 @@ const Web3 = new require('web3');
 const SolidityEvent = require('web3/lib/web3/event.js');
 const EthWallet = require('ethereumjs-wallet');
 const ethUtil = require('ethereumjs-util');
+const fs = require('fs');
 Promise.config({
   longStackTraces: false
 });
