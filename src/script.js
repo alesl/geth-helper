@@ -11,7 +11,7 @@ Promise.config({
   longStackTraces: false
 });
 
-module.exports = exports = function(file, extra, walletFile, showTransactions, showEvents) {
+module.exports = exports = function(file, extra, walletFile, showTransactions, showEvents, genPreload) {
   var ALL_STEPS, VARS, CONTRACTS, STEP_INDEX, CONTRACT_ADDRESS, TX2CB, TEST_RESULTS = [];
 
   util.readFile(file).then(function(data) {
@@ -46,6 +46,22 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
           CONTRACTS[c.name] = c;
         });
       })).then(execStep);
+    }).then(() => {
+      if (genPreload) {
+        let preload = [];
+        _.each(CONTRACT_ADDRESS, (addr, name) => {
+          let abi = CONTRACTS[name].abi;
+          preload.push(`${name} = eth.contracts(${JSON.stringify(abi)}).at(${JSON.stringify(addr)});\n`);
+        });
+
+        fs.writeFile(genPreload, preload.join('\n'), function(err) {
+          if (err) {
+            console.log(chalk.red(`Failed writing preload file at ${genPreload}`));
+          } else {
+            console.log(chalk.green(`Preload file writen in ${genPreload}`));
+          }
+        });
+      }
     });
   }).catch(util.printException).finally(function() {
     if (TEST_RESULTS.length>0) {

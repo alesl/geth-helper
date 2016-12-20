@@ -32,11 +32,17 @@ exports.builder = {
     demand: false,
     describe: 'Geth IPC file',
     type: 'string'
+  },
+  p: {
+    alias: 'preload',
+    demand: false,
+    describe: 'Generates preload',
+    type: 'string'
   }
 };
 
 exports.handler = function (argv) {
   var extra = _.omit(argv, ['_', 't', 'transactions', 'e', 'events', 'h', 'help', '$0']);
 
-  require('../src/script.js')(argv.script, extra, argv.w, argv.t, argv.e);
+  require('../src/script.js')(argv.script, extra, argv.w, argv.t, argv.e, argv.p);
 };
