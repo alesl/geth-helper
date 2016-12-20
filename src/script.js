@@ -52,15 +52,18 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
         let preload = [];
         _.each(CONTRACT_ADDRESS, (addr, name) => {
           let abi = CONTRACTS[name].abi;
-          preload.push(`${name} = eth.contracts(${JSON.stringify(abi)}).at(${JSON.stringify(addr)});\n`);
+          preload.push(`${name} = eth.contract(${JSON.stringify(abi)}).at(${JSON.stringify(addr)});\n`);
         });
 
-        fs.writeFile(genPreload, preload.join('\n'), function(err) {
-          if (err) {
-            console.log(chalk.red(`Failed writing preload file at ${genPreload}`));
-          } else {
-            console.log(chalk.green(`Preload file writen in ${genPreload}`));
-          }
+        return new Promise((resolve, reject) => {
+          fs.writeFile(genPreload, preload.join('\n'), function(err) {
+            if (err) {
+              reject(`Failed writing preload file at ${genPreload}`);
+            } else {
+              console.log(chalk.green(`Preload file writen in ${genPreload}`));
+              resolve();
+            }
+          });
         });
       }
     });
