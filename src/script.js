@@ -341,7 +341,9 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
   var extractPrivateKeyFromWallet = function(file) {
     return util.readFile(file).then(function(data) {
       var wallet = JSON.parse(data);
-      wallet.crypto = wallet.Crypto;
+      if (wallet.Crypto && !wallet.crypto) {
+        wallet.crypto = wallet.Crypto;
+      } 
 
       var privateKey, address;
       return util.read({ prompt: chalk.red(chalk.blue("Enter wallet password: ")), silent: true }).then(function(password) {
