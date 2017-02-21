@@ -362,7 +362,7 @@ var getContract = function(fileName, incContract) {
         if (output.errors) {
           throw new Error(output.errors.join('\n'));
         }
-        var contract = output.contracts[contractName];
+        var contract = output.contracts[`${fileName}:${contractName}`];
         var byteCode = contract.bytecode;
         var jsonAbi = contract.interface;
         var abi = JSON.parse(jsonAbi);
