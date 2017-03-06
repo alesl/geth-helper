@@ -161,8 +161,8 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
     var data;
 
     var abiReplaceBinaries = function(abi) {
-      return abi.replace(/__(\w){38}/g, function(lib) {
-        lib = _.trim(lib, '_');
+      return abi.replace(/__(.{38})/g, function(lib) {
+        lib = _.trim(lib, '_').split(':')[0].replace(/\.sol$/, '');
         if (!CONTRACT_ADDRESS[lib]) {
           console.log(chalk.red(`Library address for ${lib} unknown`));
           process.exit();

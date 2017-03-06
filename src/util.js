@@ -12,6 +12,7 @@ const read = require('read');
 const Web3 = require('web3');
 const util = require('util');
 const ethUtil = require('ethereumjs-util');
+const salt = '2';
 var web3;
 Promise.config({
   longStackTraces: false
@@ -226,8 +227,7 @@ function resolve(fileName) {
       lines.forEach(function(line, ii) {
         var m = line.replace(/\/\/.*$/, '').match(/import\s+["']([^"']+)["']/);
         if (m) {
-          var fp = fs.realpathSync(cwd+'/'+m[1]);
-          lines[ii] = `import "${fp}";`;
+          lines[ii] = `import "${m[1]}";`;
           imports.push(m[1]);
         }
       });
@@ -316,7 +316,7 @@ function cache(key, val) {
   };
 
   var hash = crypto.createHash('sha256');
-  hash.update(key);
+  hash.update(salt + key);
   var cacheFile = hash.digest('hex');
   var cachePath = dir+"/"+cacheFile;
 
@@ -353,7 +353,7 @@ var getContract = function(fileName, incContract) {
       var input = {};
       var files = [];
       _.each(res, function(item, name) {
-        input[name] = item.content;
+        input[name.split('/').pop()] = item.content;
         files.push(item.file);
       });
 
@@ -362,7 +362,7 @@ var getContract = function(fileName, incContract) {
         if (output.errors) {
           throw new Error(output.errors.join('\n'));
         }
-        var contract = output.contracts[`${fileName}:${contractName}`];
+        var contract = output.contracts[`${fileName.split('/').pop()}:${contractName}`];
         var byteCode = contract.bytecode;
         var jsonAbi = contract.interface;
         var abi = JSON.parse(jsonAbi);
