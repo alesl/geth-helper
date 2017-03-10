@@ -227,7 +227,8 @@ function resolve(fileName) {
       lines.forEach(function(line, ii) {
         var m = line.replace(/\/\/.*$/, '').match(/import\s+["']([^"']+)["']/);
         if (m) {
-          lines[ii] = `import "${m[1]}";`;
+          
+          lines[ii] = `import "${m[1].split('/').pop()}";`;
           imports.push(m[1]);
         }
       });
