@@ -12,7 +12,7 @@ const read = require('read');
 const Web3 = require('web3');
 const util = require('util');
 const ethUtil = require('ethereumjs-util');
-const salt = '2';
+const salt = '3';
 var web3;
 Promise.config({
   longStackTraces: false
