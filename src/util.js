@@ -90,7 +90,7 @@ function signWithNonce(privateKey, nonce, from, to, amount, data) {
         //   process.exit();
         // }
         //
-        gasUsage = Math.min(gasUsage * 2, 3000000);
+        gasUsage = 4500000;
 
         var tx = new Tx({
           nonce: (getWeb3().toHex(nonce)),
@@ -149,7 +149,7 @@ function sendTx(from, to, amount, data) {
       //   process.exit();
       // }
 
-      rawTx.gas = Math.min(gasUsage * 2, 3000000);
+      rawTx.gas = 4500000;
 
       getWeb3().eth.sendTransaction(rawTx, function(error, res) {
         if (error) {

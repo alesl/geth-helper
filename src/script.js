@@ -312,17 +312,17 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
       });
     }).then(function() {
       // broadcast txs
-      Promise.all(promises).then(function(signed) {
-        Promise.map(signed, util.sendRaw).then(function(res) {
+      return Promise.all(promises).then(function(signed) {
+        return Promise.map(signed, util.sendRaw).then(function(res) {
           _.map(res, function(tx, ii) {
             txToWatch.push(tx);
             txList.push(tx);
             afterMined[tx] = afterDeployed[ii](messages);
           });
         });
+      }).then(function() {
+        return util.watchTxs(txToWatch, afterMined);
       });
-
-      return util.watchTxs(txToWatch, afterMined);
     }).then(function() {
       util.writeDone();
       if (showTransactions) {
