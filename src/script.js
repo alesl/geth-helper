@@ -8,6 +8,7 @@ const SolidityEvent = require('web3/lib/web3/event.js');
 const EthWallet = require('ethereumjs-wallet');
 const ethUtil = require('ethereumjs-util');
 const fs = require('fs');
+const yamljs = require('yamljs');
 Promise.config({
   longStackTraces: false
 });
@@ -20,8 +21,12 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
     try {
       cf = JSON.parse(data);
     } catch(e) {
-      console.log(chalk.red("Failed parsing config file: " + e));
-      process.exit();
+      cf = yamljs.parse(data);
+
+      if (!cf) {
+        console.log(chalk.red("Failed parsing config file: " + e));
+        process.exit();
+      }
     }
     VARS = _.extend(_.get(cf, 'vars', {}), extra);
     ALL_STEPS = _.get(cf, 'steps', []);
