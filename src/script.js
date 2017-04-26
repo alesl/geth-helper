@@ -225,16 +225,27 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
     return {
       sign: util.signWithNonce(key, nonce, util.privateToAddress(key), to, step.value||0, data),
       cb: function(messages) {
-        return function(info) {
+        return function(info, basic) {
+          var outOfGas = info.gasUsed == basic.gas;
+
           if (step.type=='deploy') {
             CONTRACT_ADDRESS[step.as || contractName] = info.contractAddress;
             var alias = '';
             if (step.as) {
               alias = ` (${step.as})`;
             }
-            messages.push('Contract '+chalk.blue(contractName)+alias+' mined at '+chalk.blue(info.contractAddress));
+            if (!outOfGas) {
+              messages.push('Contract '+chalk.blue(contractName)+alias+' mined at '+chalk.blue(info.contractAddress));
+            } else {
+              messages.push(chalk.red('Contract '+contractNam)+alias+' not deployed, out of gas');
+            }
           } else if (step.type=='call') {
-            messages.push('Method '+contractName+'@'+methodName+' executed');
+            if (!outOfGas) {
+              messages.push('Method '+contractName+'@'+methodName+' executed');
+            } else {
+              messages.push(chalk.red('Method '+contractName+'@'+methodName+' failed, out of gas'));
+              return;
+            }
             var formater = contract.allEvents().formatter;
             info.logs.forEach(function(log) {
               if (log.address!=to) {

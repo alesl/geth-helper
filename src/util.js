@@ -485,15 +485,18 @@ function watchTxs(txToWatch, afterMined) {
             return;
           }
 
-          if (afterMined[txId]) {
-            afterMined[txId](info);
-            _.remove(txToWatch, function(id) { return id==txId; });
+          getWeb3().eth.getTransaction(txId, function(err, basic) {
 
-            if (txToWatch.length==0) {
-              blockFilter.stopWatching();
-              resolve();
+            if (afterMined[txId]) {
+              afterMined[txId](info, basic);
+              _.remove(txToWatch, function(id) { return id==txId; });
+
+              if (txToWatch.length==0) {
+                blockFilter.stopWatching();
+                resolve();
+              }
             }
-          }
+          });
         });
       };
 
