@@ -80,10 +80,10 @@ function signWithNonce(privateKey, nonce, from, to, amount, data) {
         return;
       }
       getWeb3().eth.estimateGas(rawTx, function(error, gasUsage) {
-        if (error) {
-          reject(error);
-          return;
-        }
+        // if (error) {
+        //   reject(error);
+        //   return;
+        // }
         // var forceLimit = 4700000;
         // if (gasUsage>forceLimit) {
         //   console.log(chalk.red(`Needed gas is too high: ${gasUsage}`));
