@@ -237,7 +237,7 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
             if (!outOfGas) {
               messages.push('Contract '+chalk.blue(contractName)+alias+' mined at '+chalk.blue(info.contractAddress));
             } else {
-              messages.push(chalk.red('Contract '+contractNam)+alias+' not deployed, out of gas');
+              messages.push(chalk.red('Contract '+contractName)+alias+' not deployed, out of gas');
             }
           } else if (step.type=='call') {
             if (!outOfGas) {
