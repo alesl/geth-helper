@@ -278,7 +278,7 @@ function fileTime(fileName) {
   return new Promise(function(resolve, reject) {
     fs.stat(fileName, function(err, stat) {
       if (err) {
-        reject(err);
+        resolve(-1);
       } else {
         resolve(stat.mtime.getTime());
       }
