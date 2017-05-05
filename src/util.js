@@ -13,6 +13,7 @@ const Web3 = require('web3');
 const util = require('util');
 const ethUtil = require('ethereumjs-util');
 const salt = '3';
+var DEFAULT_GAS = 4000000;
 var web3;
 Promise.config({
   longStackTraces: false
@@ -90,7 +91,7 @@ function signWithNonce(privateKey, nonce, from, to, amount, data) {
         //   process.exit();
         // }
         //
-        gasUsage = 4500000;
+        gasUsage = DEFAULT_GAS;
 
         var tx = new Tx({
           nonce: (getWeb3().toHex(nonce)),
@@ -506,6 +507,9 @@ function watchTxs(txToWatch, afterMined) {
 }
 
 var exports = module.exports = {
+  setDefaultGas: function(gas) {
+    DEFAULT_GAS = gas;
+  },
   getContract: getContract,
   prepareArgs: prepareArgs,
   step: step,

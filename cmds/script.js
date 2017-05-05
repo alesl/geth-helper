@@ -38,11 +38,21 @@ exports.builder = {
     demand: false,
     describe: 'Generates preload',
     type: 'string'
+  },
+  gas: {
+    alias: 'gas_limit',
+    demand: false,
+    describe: 'Force gas limit',
+    // type: 'number'
   }
 };
 
 exports.handler = function (argv) {
   var extra = _.omit(argv, ['_', 't', 'transactions', 'e', 'events', 'h', 'help', '$0']);
+
+  if (argv.gas_limit) {
+    util.setDefaultGas(parseInt(argv.gas_limit));
+  }
 
   require('../src/script.js')(argv.script, extra, argv.w, argv.t, argv.e, argv.p);
 };
