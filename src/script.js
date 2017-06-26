@@ -60,7 +60,7 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
         });
 
         _.each(CONTRACT_ADDRESS, (addr, alias) => {
-          var name = CONTRACTS[ALIAS_TO_NAME[alias]];
+          var name = CONTRACTS[ALIAS_TO_NAME[alias]].name;
           preload.push(`${alias} = ${name}At(${JSON.stringify(addr)});\n`);
         });
 
