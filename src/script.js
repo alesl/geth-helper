@@ -14,7 +14,7 @@ Promise.config({
 });
 
 module.exports = exports = function(file, extra, walletFile, showTransactions, showEvents, genPreload) {
-  var ALL_STEPS, VARS, CONTRACTS, STEP_INDEX, CONTRACT_ADDRESS, TX2CB, TEST_RESULTS = [], ALIAS_TO_NAME = {};
+  var ALL_STEPS, VARS, CONTRACTS, STEP_INDEX, CONTRACT_ADDRESS, TX2CB, TEST_RESULTS = [], ALIAS_TO_NAME = {}, DEFAULT_KEY;
 
   util.readFile(file).then(function(data) {
     var cf;
@@ -28,6 +28,7 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
         process.exit();
       }
     }
+    DEFAULT_KEY = _.get(cf, 'default_key', null);
     VARS = _.extend(_.get(cf, 'vars', {}), extra);
     ALL_STEPS = _.get(cf, 'steps', []);
     CONTRACTS = {};
@@ -125,7 +126,8 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
 
 
   var prepareStep = function(step) {
-    var keys = step.key;
+    var keys = step.key || DEFAULT_KEY;
+    step.key = keys;
     if (!_.isArray(keys)) {
       keys = [keys];
     }
