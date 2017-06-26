@@ -14,7 +14,7 @@ Promise.config({
 });
 
 module.exports = exports = function(file, extra, walletFile, showTransactions, showEvents, genPreload) {
-  var ALL_STEPS, VARS, CONTRACTS, STEP_INDEX, CONTRACT_ADDRESS, TX2CB, TEST_RESULTS = [];
+  var ALL_STEPS, VARS, CONTRACTS, STEP_INDEX, CONTRACT_ADDRESS, TX2CB, TEST_RESULTS = [], ALIAS_TO_NAME = {};
 
   util.readFile(file).then(function(data) {
     var cf;
@@ -55,11 +55,15 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
     }).then(() => {
       if (genPreload) {
         let preload = [];
-        _.each(CONTRACT_ADDRESS, (addr, name) => {
-          let abi = CONTRACTS[name].abi;
-          preload.push(`${name}At = function(address) { return eth.contract(${JSON.stringify(abi)}).at(address); })\n`);
-          preload.push(`${name} = ${name}At(${JSON.stringify(addr)});\n`);
+        _.each(CONTRACTS, (contract, name) => {
+          preload.push(`${name}At = function(address) { return eth.contract(${JSON.stringify(contract.abi)}).at(address); })\n`);
         });
+
+        _.each(CONTRACT_ADDRESS, (addr, alias) => {
+          var name = CONTRACTS[ALIAS_TO_NAME[alias]];
+          preload.push(`${alias} = ${name}At(${JSON.stringify(addr)});\n`);
+        });
+
 
         return new Promise((resolve, reject) => {
           fs.writeFile(genPreload, preload.join('\n'), function(err) {
@@ -231,6 +235,7 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
 
           if (step.type=='deploy') {
             CONTRACT_ADDRESS[step.as || contractName] = info.contractAddress;
+            ALIAS_TO_NAME[step.as || contractName] = contractName;
             var alias = '';
             if (step.as) {
               alias = ` (${step.as})`;
