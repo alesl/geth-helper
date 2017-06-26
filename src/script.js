@@ -190,7 +190,7 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
       }
       methodName = resolveName(step.method);
       methodAbi = contractInfo.abi.find(function(item) {
-        if (item.type=='function' && item.name==methodName) {
+        if (item.type=='function' && item.name==methodName && item.inputs.length == (step.args || []).length) {
           return true;
         }
       });
