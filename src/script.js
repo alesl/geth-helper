@@ -57,7 +57,8 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
         let preload = [];
         _.each(CONTRACT_ADDRESS, (addr, name) => {
           let abi = CONTRACTS[name].abi;
-          preload.push(`${name} = eth.contract(${JSON.stringify(abi)}).at(${JSON.stringify(addr)});\n`);
+          preload.push(`${name}At = function(address) { return eth.contract(${JSON.stringify(abi)}).at(address); })\n`);
+          preload.push(`${name} = ${name}At(${JSON.stringify(addr)});\n`);
         });
 
         return new Promise((resolve, reject) => {
