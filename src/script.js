@@ -198,7 +198,7 @@ function receipt(txId) {
     };
 
     if (step.type=='call') {
-      to = resolveVar(contractInfo.name);
+      to = step.address || resolveVar(contractInfo.name);
       if (!to) {
         console.log(chalk.red("Contract ${contractName} missing address"));
       }
