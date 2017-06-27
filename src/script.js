@@ -76,6 +76,7 @@ function receipt(txId) {
       filter.stopWatching();
     }
   });
+  return txId;
 }        
 `);
 
