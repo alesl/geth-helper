@@ -65,6 +65,19 @@ module.exports = exports = function(file, extra, walletFile, showTransactions, s
           preload.push(`${alias} = ${name}At(${JSON.stringify(addr)});\n`);
         });
 
+        preload.push(`
+eth.defaultAccount = eth.accounts[0];
+function receipt(txId) {
+  var filter = eth.filter('latest');
+  filter.watch(function() {
+    var ret = eth.getTransactionReceipt(txId);
+    if (ret) {
+      inspect(ret);
+      filter.stopWatching();
+    }
+  });
+}        
+`);
 
         return new Promise((resolve, reject) => {
           fs.writeFile(genPreload, preload.join('\n'), function(err) {
