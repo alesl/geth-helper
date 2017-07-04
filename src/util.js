@@ -362,7 +362,11 @@ var getContract = function(fileName, incContract) {
       return fileMaxTime(files).then(function(maxTime) {
         var output = solc.compile({sources: input}, 1);
         if (output.errors) {
-          throw new Error(output.errors.join('\n'));
+          if (output.contracts) {
+            console.log(chalk.yellow(output.errors.join('\n')));
+          } else {
+            throw new Error(output.errors.join('\n'));
+          }
         }
         var contract = output.contracts[`${fileName.split('/').pop()}:${contractName}`];
         var byteCode = contract.bytecode;
