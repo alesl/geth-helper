@@ -363,7 +363,7 @@ var getContract = function(fileName, incContract) {
         var output = solc.compile({sources: input}, 1);
         if (output.errors) {
           if (output.contracts) {
-            console.log(chalk.yellow(output.errors.join('\n')));
+            console.error(chalk.yellow(output.errors.join('\n')));
           } else {
             throw new Error(output.errors.join('\n'));
           }
